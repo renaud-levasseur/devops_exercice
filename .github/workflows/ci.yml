@@ -1,0 +1,30 @@
+name: Test pull request
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  first:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fin des tests
+        run: echo OK
+
+  second:
+    needs: [first]
+    if: ${{ github.event_name =='push' && github.ref_name == 'main' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Start prod
+        run: echo PROD
