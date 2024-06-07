@@ -1,0 +1,473 @@
+openapi: 3.0.0
+info:
+  title: Cocktail API
+  description: Cocktail RESTFul API for try. https://www.youtube.com/c/faisonslepoint
+  version: 1.0.0
+servers:
+  - url: http://flp-api.francecentral.cloudapp.azure.com/
+schemes:
+  - http
+paths:
+  /auth/login:
+    post:
+      tags: 
+        - Auth Module
+      summary: Log In the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:              
+              $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: Connected
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/LoginResponse'                
+        '400':
+          description: Bad email or password
+        '401':
+          description: Not Authorized
+        '500':
+          description: Internal Error
+
+  /users:
+    get:
+      tags:
+        - User Module
+      summary: Get all users from BDD
+      responses:        
+        '200':
+          description: Returns an array of all users
+          content:            
+            application/json:
+              schema:
+                $ref: '#/definitions/AllUser'                    
+        '500':
+          description: Internal Error      
+    put:
+      tags:
+        - User Module
+      summary: Create new user in BDD
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:         
+              $ref: '#/definitions/OneUserToModify'  
+      responses:        
+        '200':
+          description: Returns object with the new user informations
+          content:            
+            application/json:
+              schema:                
+                $ref: '#/definitions/OneUser' 
+        '400':
+          description: Missing Data
+        '409':
+          description: User already exists                  
+        '500':
+          description: Internal Error      
+  /users/{id}:
+    get:
+      tags:
+        - User Module
+      summary: Get one user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id of user
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: User
+          content:            
+            application/json:
+              schema:                
+                $ref: '#/definitions/OneUser'
+        '400':
+          description: Missing parameter
+        '404':
+          description: User not exists
+        '500':
+          description: Internal server error                      
+    patch:
+      tags:
+        - User Module
+      summary: Modify User
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id of user
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:         
+              $ref: '#/definitions/OneUserToModify'                     
+    delete:
+      tags:
+        - User Module
+      summary: Delete one user
+      parameters:
+       - name: id
+         in: path
+         required: true
+         description: id of user to be deleted
+         schema:
+           type: integer
+           format: int64
+           example: 1
+      responses:
+       '204':
+         description: User Deleted
+       '400':
+         description: Missing parameter
+       '500':
+         description: Internal server error
+
+  /users/trash/{id}:
+    delete:
+      tags:
+        - User Module
+      summary: Trash one user
+      parameters:
+       - name: id
+         in: path
+         required: true
+         description: id of user to be trashed
+         schema:
+           type: integer
+           format: int64
+           example: 1
+      responses:
+       '204':
+         description: User trashed
+       '400':
+         description: Missing parameter
+       '500':
+         description: Internal server error
+  /users/untrash/{id}:
+    post:
+      tags:
+        - User Module
+      summary: Untrash one user
+      parameters:
+       - name: id
+         in: path
+         required: true
+         description: id of user to be untrashed
+         schema:
+           type: integer
+           format: int64
+           example: 1
+      responses:
+       '204':
+         description: User untrashed
+       '400':
+         description: Missing parameter
+       '500':
+         description: Internal server error
+  /cocktails:
+    get:
+      tags:
+        - Cocktail Module
+      summary: Get all cocktails from BDD
+      responses:        
+        '200':
+          description: Returns an array of all cocktails
+          content:            
+            application/json:
+              schema:
+                $ref: '#/definitions/AllCocktail'                    
+        '500':
+          description: Internal Error      
+    put:
+      tags:
+        - Cocktail Module
+      security:
+       - BearerAuth: []
+      summary: Create new cocktail in BDD
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:         
+              $ref: '#/definitions/OneCocktail'  
+      responses:        
+        '200':
+          description: Returns object with the new cocktail informations
+          content:            
+            application/json:
+              schema:                
+                $ref: '#/definitions/OneCocktail' 
+        '400':
+          description: Missing Data
+        '409':
+          description: Cocktail already exists                  
+        '500':
+          description: Internal Error      
+  /cocktails/{id}:
+    get:
+      tags:
+        - Cocktail Module
+      summary: Get one cocktail by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id of cocktail
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: A Cocktail
+          content:            
+            application/json:
+              schema:                
+                $ref: '#/definitions/OneCocktail'
+        '400':
+          description: Missing parameter
+        '404':
+          description: Cocktail not exists
+        '500':
+          description: Internal server error                      
+    patch:
+      tags:
+        - Cocktail Module
+      security:
+       - BearerAuth: []
+      summary: Modify Cocktail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id of cocktail
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:         
+              $ref: '#/definitions/OneCocktailToModify'                     
+    delete:
+      tags:
+        - Cocktail Module
+      security:
+       - BearerAuth: []
+      summary: Delete one cocktail
+      parameters:
+       - name: id
+         in: path
+         required: true
+         description: id of cocktail to be deleted
+         schema:
+           type: integer
+           format: int64
+           example: 1
+      responses:
+       '204':
+         description: Cocktail Deleted
+       '400':
+         description: Missing parameter
+       '500':
+         description: Internal server error
+
+  /cocktails/trash/{id}:
+    delete:
+      tags:
+        - Cocktail Module
+      security:
+       - BearerAuth: []
+      summary: Trash one cocktail
+      parameters:
+       - name: id
+         in: path
+         required: true
+         description: id of cocktail to be trashed
+         schema:
+           type: integer
+           format: int64
+           example: 1
+      responses:
+       '204':
+         description: Cocktail trashed
+       '400':
+         description: Missing parameter
+       '500':
+         description: Internal server error
+  /cocktails/untrash/{id}:  
+    post:
+      tags:
+        - Cocktail Module
+      security:
+       - BearerAuth: []
+      summary: Untrash one cocktail
+      parameters:
+       - name: id
+         in: path
+         required: true
+         description: id of cocktail to be untrashed
+         schema:
+           type: integer
+           format: int64
+           example: 1
+      responses:
+       '204':
+         description: Cocktail untrashed
+       '400':
+         description: Missing parameter
+       '500':
+         description: Internal server error
+
+
+components:
+  securitySchemes:
+   BearerAuth:
+     type: http
+     scheme: bearer
+securityDefinitions:
+  Bearer:
+    type: JWT
+    name: Authorization
+    in: header
+definitions:
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  LoginResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY1MTg3NDkzOSwiZXhwIjoxNjUxOTYxMzM5fQ.JGN1p8YIfR-M-5eQ-Ypy6Ima5cKA4VbfL2xMr2MgHm4
+  OneUser:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      nom:
+        type: string
+        example: "Roger"
+      prenom:
+        type: string
+        example: "Marcel"
+      pseudo:
+        type: string
+        example: "Le Fou"
+      email:
+        type: string
+        example: "roger@marcel.com"
+      password:                   
+        type: string
+        example: "$2y$10$fCx3TihgTRhT.vqw/u9qDuHJr8w2KEe.YHgitZ7aV5vLoChqiTaYK"
+  AllUser:
+    type: array
+    items: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nom:
+          type: string
+          example: "Roger"
+        prenom:
+          type: string
+          example: "Marcel"
+        pseudo:
+          type: string
+          example: "Le Fou"
+        email:
+          type: string
+          example: "roger@marcel.com"
+        password:                   
+          type: string
+          example: "$2y$10$fCx3TihgTRhT.vqw/u9qDuHJr8w2KEe.YHgitZ7aV5vLoChqiTaYK"
+  OneUserToModify:
+    type: object
+    properties:
+      nom:
+        type: string
+        example: "Roger"
+      prenom:
+        type: string
+        example: "Marcel"
+      pseudo:
+        type: string
+        example: "Le Fou"
+      email:
+        type: string
+        example: "roger@marcel.com"
+      password:
+        type: string
+        example: "marcel"
+  OneCocktail:
+    type: object
+    properties:
+      user_id:
+        type: integer
+        format: int64
+        example: 1
+      nom:
+        type: string
+        example: "Mojito"
+      description:
+        type: string
+        example: "Fraicheur et menthe"
+      recette:
+        type: string
+        example: "Thum blanc, sirop de sucre de canne, feuille de menthe, citron vert, eau gazeuse"
+  AllCocktail:
+    type: array
+    items:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        nom:
+          type: string
+          example: "Mojito"
+        description:
+          type: string
+          example: "Fraicheur et menthe"
+        recette:
+          type: string
+          example: "Thum blanc, sirop de sucre de canne, feuille de menthe, citron vert, eau gazeuse"    
+  OneCocktailToModify:
+    type: object
+    properties:
+      nom:
+        type: string
+        example: "Mojito"
+      description:
+        type: string
+        example: "Fraicheur et menthe"
+      recette:
+        type: string
+        example: "Thum blanc, sirop de sucre de canne, feuille de menthe, citron vert, eau gazeuse" 
